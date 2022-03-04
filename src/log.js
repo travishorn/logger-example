@@ -1,4 +1,3 @@
-import { createWriteStream } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import pino from "pino";
@@ -6,13 +5,25 @@ import pretty from "pino-pretty";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const fileErrorStream = createWriteStream(
-  join(__dirname, "../logs/error.ndjson")
-);
+const fileStream = pino.transport({
+  target: "pino/file",
+  options: { destination: join(__dirname, "../log.ndjson") },
+});
 
-const fileInfoStream = createWriteStream(
-  join(__dirname, "../logs/info.ndjson")
-);
+const mongoStream = pino.transport({
+  target: "pino-mongodb",
+  options: {
+    uri: "mongodb://localhost:27017/",
+    database: "loggerExample",
+    collection: "log",
+    mongoOptions: {
+      auth: {
+        username: "loggerExampleReaderWriter",
+        password: "loggerExampleReaderWriter",
+      },
+    },
+  },
+});
 
 const stdOutStream = pretty({
   colorize: true,
@@ -21,8 +32,8 @@ const stdOutStream = pretty({
 });
 
 const streams = [
-  { level: "error", stream: fileErrorStream },
-  { level: "info", stream: fileInfoStream },
+  { stream: fileStream },
+  { stream: mongoStream },
   { stream: stdOutStream },
 ];
 
