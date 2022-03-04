@@ -2,8 +2,8 @@
 
 Playing with Pino logger.
 
-Use `log.info()` to log information to `logs/info.ndjson`. Use `log.error()` to
-log errors to `logs/error.ndjson`. Both are printed to the console.
+Use `log.info()`, `log.error()`, etc. to log errors to `log.ndjson` file and
+`stdout`.
 
 ## License
 
